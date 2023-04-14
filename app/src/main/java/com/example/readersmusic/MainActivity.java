@@ -299,22 +299,22 @@ public class MainActivity extends AppCompatActivity implements ServiceCallbacks{
     public boolean dispatchKeyEvent(KeyEvent event) {
         int keyCode = event.getKeyCode();
         int action = event.getAction();
+        float volumeStep = 1f/volumeProgressBar.getMax();
 
         if(playerService != null) {
             if (keyCode == KeyEvent.KEYCODE_VOLUME_UP && action == KeyEvent.ACTION_DOWN) {
-                if(currentVolume <= 0.95f){
-                    currentVolume+=0.1f;
+                currentVolume+=volumeStep;
+                if(currentVolume>1)
+                    currentVolume = 1;
 
-                    if(currentVolume>1)
-                        currentVolume = 1;
+                playerService.changeVolume(currentVolume);
 
-                    playerService.changeVolume(currentVolume);
-                }
             } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && action == KeyEvent.ACTION_DOWN) {
-                if(currentVolume >= 0.1f){
-                    currentVolume-=0.1f;
-                    playerService.changeVolume(currentVolume);
-                }
+                currentVolume-= volumeStep;
+                if(currentVolume < 0)
+                    currentVolume = 0;
+                playerService.changeVolume(currentVolume);
+
             }
             volumeToast.show();
             Log.i(MainActivity.this.getClass().getName(), "" + currentVolume);

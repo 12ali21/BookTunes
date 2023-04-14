@@ -25,15 +25,19 @@ public class MediaProgress implements Runnable {
     @Override
     public void run() {
         while(!stop.get()){
-            if(mediaPlayer.isPlaying())
-                progressBar.setProgress(mediaPlayer.getCurrentPosition());
+            try {
+                if(mediaPlayer.isPlaying())
+                    progressBar.setProgress(mediaPlayer.getCurrentPosition());
+            } catch (IllegalStateException e){
+                break;
+            }
 
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                break;
             }
         }
-        Log.i("Media Progress", "Stopped");
+        Log.i("Media Progress", "Thread Stopped");
     }
 }

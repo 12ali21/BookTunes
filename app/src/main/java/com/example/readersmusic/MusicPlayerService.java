@@ -25,7 +25,7 @@ import androidx.core.app.NotificationCompat;
 
 
 public class MusicPlayerService extends Service implements MediaPlayer.OnCompletionListener,
-        MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener, Runnable{
+        MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener{
 
     ServiceCallbacks serviceCallbacks;
 
@@ -107,8 +107,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             mediaPlayer.release();
         }
 
-        if(mediaProgress!=null)
-            mediaProgressThread.interrupt();
 
         if(phoneStateListener != null){
             telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE);
@@ -355,6 +353,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     private void initMediaProgressBar(){
+        if(serviceCallbacks == null)
+            return;
         mediaProgress = new MediaProgress(mediaPlayer, serviceCallbacks.getMediaProgressBar());
         mediaProgressThread = new Thread(mediaProgress);
         mediaProgressThread.start();
@@ -430,7 +430,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     private void stopMedia(){
-        mediaProgressThread.interrupt();
+        if(mediaProgress!=null)
+            mediaProgressThread.interrupt();
         Log.i("Here", "IAM");
 
         if(mediaPlayer==null)
