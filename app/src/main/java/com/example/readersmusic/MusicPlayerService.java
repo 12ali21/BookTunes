@@ -228,15 +228,21 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             play_pauseAction = playbackAction(0);
         }
 
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        notificationIntent.setAction(Intent. ACTION_MAIN ) ;
+        notificationIntent.setFlags(Intent. FLAG_ACTIVITY_CLEAR_TOP | Intent. FLAG_ACTIVITY_SINGLE_TOP );
+        PendingIntent resultIntent = PendingIntent.getActivity(this, 0, notificationIntent,  0);
 
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setShowWhen(false)
+                .setContentIntent(resultIntent)
                 .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                         .setMediaSession(mediaSession.getSessionToken())
                         .setShowActionsInCompactView(0, 1, 2))
                 .setLargeIcon(currentMusic.getCover())
-                .setSmallIcon(android.R.drawable.stat_sys_headset)
+                .setSmallIcon(R.drawable.audio_book_icon)
                 .setContentTitle(currentMusic.getName())
                 .setContentText(currentMusic.getArtist())
                 .setContentInfo("that")

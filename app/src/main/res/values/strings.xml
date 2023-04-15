@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">Readers Music</string>
+    <string name="app_name">Book Tunes</string>
+    <string name="type_fear">Fear</string>
+    <string name="type_calm">Peaceful</string>
+    <string name="type_sorrow">Sorrow</string>
+    <string name="type_battle">Battle</string>
 </resources>

@@ -1,15 +1,19 @@
 package com.example.readersmusic;
 
+import android.content.Context;
+
 public enum MusicType {
-    FIGHT, SORROW, CALM;
-    public String getType(){
+    FIGHT, SORROW, CALM, FEAR;
+    public String getType(Context c){
         switch (this){
             case FIGHT:
-                return "Fight";
+                return c.getString(R.string.type_battle);
             case SORROW:
-                return "Sorrow";
+                return  c.getString(R.string.type_sorrow);
             case CALM:
-                return "Calm";
+                return  c.getString(R.string.type_calm);
+            case FEAR:
+                return  c.getString(R.string.type_fear);
             default:
                 return null;
         }

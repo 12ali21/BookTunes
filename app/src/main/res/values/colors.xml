@@ -13,4 +13,5 @@
     <color name="button_pressed">#9162FF</color>
     <color name="button_background">#B291FF</color>
     <color name="purple_card">#C9220B3E</color>
+    <color name="ic_launcher_background">#251F4B</color>
 </resources>

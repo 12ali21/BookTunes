@@ -10,9 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -33,16 +35,11 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 /*
-TODO: More categories
+TODO: WORRY category
 TODO: Better music and type compatibility
-TODO: Controller music data
 TODO: Controller animation
 TODO: a new activity that shows the list of musics
-TODO: Change background
-TODO: App icon
 TODO: maybe compressing?
-TODO: Volume
-TODO: custom volumes for loud musics
  */
 
 public class MainActivity extends AppCompatActivity implements ServiceCallbacks{
@@ -56,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements ServiceCallbacks{
     ImageButton controllerPreviousButton;
     ImageView controllerCoverImage;
     ProgressBar controllerProgressBar;
+    SharedPreferences sharedPreferences;
 //
 //    ImageButton volumeButton;
 //    SeekBar volumeSeekBar;
@@ -66,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements ServiceCallbacks{
     Thread mediaProgressObserver;
 
     public static final String BROADCAST_PLAY_NEW_AUDIO = "com.example.readersmusic.audioplayer.playnew";
+    public static final String VOLUME_SHARED_PREFERENCES = "com.example.readersmusic.audioplayer.volumeVar";
+
     boolean serviceBound;
     private ServiceConnection serviceConnection;
     private MusicPlayerService playerService;
@@ -81,6 +81,9 @@ public class MainActivity extends AppCompatActivity implements ServiceCallbacks{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sharedPreferences = getSharedPreferences("BookTunes", MODE_PRIVATE);
+
         toastView =  getLayoutInflater().inflate(R.layout.toast_layout, (ViewGroup) findViewById(R.id.toast_layout));
         volumeToast = new Toast(this);
         volumeToast.setView(toastView);
@@ -104,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements ServiceCallbacks{
 //        volumeButton = findViewById(R.id.volume_btn);
 //        volumeSeekBar = findViewById(R.id.volume_seekbar);
 
+        currentVolume = sharedPreferences.getFloat(VOLUME_SHARED_PREFERENCES, 0f);
+
         playerCard.setVisibility(View.INVISIBLE);
         // Create cards details
         ArrayList<CardModel> cardModels = createCards();
@@ -123,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements ServiceCallbacks{
                 serviceBound = true;
                 playerService.setCallbacks(MainActivity.this);
                 playerService.prepareController();
+                playerService.changeVolume(currentVolume);
 //                playerService.changeVolume((float)volumeSeekBar.getProgress()/20);
 
 
@@ -150,6 +156,8 @@ public class MainActivity extends AppCompatActivity implements ServiceCallbacks{
                     case 2:
                         type = MusicType.CALM;
                         break;
+                    case 3:
+                        type = MusicType.FEAR;
                 }
 
                 playMusic(type);
@@ -188,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements ServiceCallbacks{
 
     }
 
+
     public void changePlayBtnState(MusicPlayerService.PlaybackStatus status){
         if(status == MusicPlayerService.PlaybackStatus.PLAYING){
             controllerPlayButton.setImageResource(android.R.drawable.ic_media_pause);
@@ -214,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements ServiceCallbacks{
 
     @Override
     public void setControllerType(MusicType type) {
-        controllerMusicType.setText(type.getType());
+        controllerMusicType.setText(type.getType(this));
     }
 
     @Override
@@ -246,11 +255,13 @@ public class MainActivity extends AppCompatActivity implements ServiceCallbacks{
     }
 
 
+
     private ArrayList<CardModel> createCards() {
         ArrayList<CardModel> cardModels = new ArrayList<>();
-        cardModels.add(new CardModel(R.drawable.fight, "Fight"));
-        cardModels.add(new CardModel(R.drawable.sorrow, "Sorrow"));
-        cardModels.add(new CardModel(R.drawable.calm, "Calm"));
+        cardModels.add(new CardModel(R.drawable.fight, getString(R.string.type_battle)));
+        cardModels.add(new CardModel(R.drawable.sorrow, getString(R.string.type_sorrow)));
+        cardModels.add(new CardModel(R.drawable.peaceful, getString(R.string.type_calm)));
+        cardModels.add(new CardModel(R.drawable.thunderstorm, getString(R.string.type_fear)));
         return cardModels;
     }
 
@@ -279,6 +290,11 @@ public class MainActivity extends AppCompatActivity implements ServiceCallbacks{
             unbindService(serviceConnection);
             playerService.stopSelf();
         }
+
+        sharedPreferences.edit()
+                .putFloat(VOLUME_SHARED_PREFERENCES, currentVolume)
+                .apply();
+
         super.onDestroy();
     }
 
@@ -301,8 +317,11 @@ public class MainActivity extends AppCompatActivity implements ServiceCallbacks{
         int action = event.getAction();
         float volumeStep = 1f/volumeProgressBar.getMax();
 
+        boolean myKey = false;
+
         if(playerService != null) {
             if (keyCode == KeyEvent.KEYCODE_VOLUME_UP && action == KeyEvent.ACTION_DOWN) {
+                myKey = true;
                 currentVolume+=volumeStep;
                 if(currentVolume>1)
                     currentVolume = 1;
@@ -310,16 +329,19 @@ public class MainActivity extends AppCompatActivity implements ServiceCallbacks{
                 playerService.changeVolume(currentVolume);
 
             } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && action == KeyEvent.ACTION_DOWN) {
+                myKey = true;
                 currentVolume-= volumeStep;
                 if(currentVolume < 0)
                     currentVolume = 0;
                 playerService.changeVolume(currentVolume);
 
             }
-            volumeToast.show();
-            Log.i(MainActivity.this.getClass().getName(), "" + currentVolume);
-            volumeProgressBar.setProgress((int) (currentVolume * volumeProgressBar.getMax()));
-            return true;
+            if(myKey) {
+                volumeToast.show();
+                Log.i(MainActivity.this.getClass().getName(), "" + currentVolume);
+                volumeProgressBar.setProgress((int) (currentVolume * volumeProgressBar.getMax()));
+                return true;
+            }
         }
         return super.dispatchKeyEvent(event);
     }

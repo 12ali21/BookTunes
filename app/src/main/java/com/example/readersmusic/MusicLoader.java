@@ -25,8 +25,13 @@ public class MusicLoader {
             case SORROW:
                 loadSorrow();
                 break;
+            case FEAR:
+                loadFear();
+                break;
         }
     }
+
+
 
     public Music getLastMusic(){
         if(orderIndex<=1)
@@ -76,6 +81,16 @@ public class MusicLoader {
         musicList.add(new Music(R.raw.k2, MusicType.FIGHT, context));
         musicList.add(new Music(R.raw.none_shall_live, MusicType.FIGHT, context));
         musicList.add(new Music(R.raw.scimitar, MusicType.FIGHT, context));
+        Collections.shuffle(musicList);
+    }
+
+    private void loadFear() {
+        musicList.add(new Music(R.raw.tension, MusicType.FEAR, context));
+        musicList.add(new Music(R.raw.battle_school, MusicType.FEAR, context));
+        musicList.add(new Music(R.raw.driving_to_mexico, MusicType.FEAR, context));
+        musicList.add(new Music(R.raw.into_the_storm, MusicType.FEAR, context));
+        musicList.add(new Music(R.raw.mordor, MusicType.FEAR, context));
+        musicList.add(new Music(R.raw.the_hunt, MusicType.FEAR, context));
         Collections.shuffle(musicList);
     }
 
