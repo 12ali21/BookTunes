@@ -7,6 +7,8 @@ import android.media.MediaDataSource;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 
+import java.io.IOException;
+
 public class Music {
     private final int source;
     private  String name;
@@ -40,7 +42,10 @@ public class Music {
         } else {
             cover = null;
         }
-        metadataRetriever.release();
+        try {
+            metadataRetriever.release();
+        } catch (IOException e) {
+        }
     }
 
     public String getName() {

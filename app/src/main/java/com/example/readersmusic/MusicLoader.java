@@ -19,7 +19,7 @@ public class MusicLoader {
             case CALM:
                 loadCalm();
                 break;
-            case FIGHT:
+            case Battle:
                 loadFight();
                 break;
             case SORROW:
@@ -49,8 +49,8 @@ public class MusicLoader {
 
     /*
     Unused musics:
-    wars of faith
-    trials of odin
+        wars of faith
+        trials of odin
      */
     private void loadSorrow() {
         musicList.add(new Music(R.raw.chasm, MusicType.SORROW, context));
@@ -76,17 +76,17 @@ public class MusicLoader {
     }
 
     private void loadFight() {
-        musicList.add(new Music(R.raw.fever_dream, MusicType.FIGHT, context));
-        musicList.add(new Music(R.raw.before_lights_out, MusicType.FIGHT, context));
-        musicList.add(new Music(R.raw.k2, MusicType.FIGHT, context));
-        musicList.add(new Music(R.raw.none_shall_live, MusicType.FIGHT, context));
-        musicList.add(new Music(R.raw.scimitar, MusicType.FIGHT, context));
+        musicList.add(new Music(R.raw.fever_dream, MusicType.Battle, context));
+        musicList.add(new Music(R.raw.before_lights_out, MusicType.Battle, context));
+        musicList.add(new Music(R.raw.k2, MusicType.Battle, context));
+        musicList.add(new Music(R.raw.none_shall_live, MusicType.Battle, context));
+        musicList.add(new Music(R.raw.scimitar, MusicType.Battle, context));
         Collections.shuffle(musicList);
     }
 
     private void loadFear() {
         musicList.add(new Music(R.raw.tension, MusicType.FEAR, context));
-        musicList.add(new Music(R.raw.battle_school, MusicType.FEAR, context));
+//        musicList.add(new Music(R.raw.battle_school, MusicType.FEAR, context));
         musicList.add(new Music(R.raw.driving_to_mexico, MusicType.FEAR, context));
         musicList.add(new Music(R.raw.into_the_storm, MusicType.FEAR, context));
         musicList.add(new Music(R.raw.mordor, MusicType.FEAR, context));
