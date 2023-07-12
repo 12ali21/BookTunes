@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity(), ServiceCallbacks {
         recyclerView.adapter = adapter
 
         // Recycler view cards listener
-        adapter.setOnClickListener { position, model ->
+        adapter.setOnClickListener { _, model ->
             playMusic(model.type)
         }
 
@@ -142,8 +142,8 @@ class MainActivity : AppCompatActivity(), ServiceCallbacks {
                 changePlayBtnState(PlaybackStatus.PLAYING)
             }
         })
-        controllerNextButton.setOnClickListener(View.OnClickListener { playerService!!.transportControls?.skipToNext() })
-        controllerPreviousButton.setOnClickListener(View.OnClickListener { playerService!!.transportControls?.skipToPrevious() })
+        controllerNextButton.setOnClickListener(View.OnClickListener { playerService?.transportControls?.skipToNext() })
+        controllerPreviousButton.setOnClickListener(View.OnClickListener { playerService?.transportControls?.skipToPrevious() })
     }
 
     override fun changePlayBtnState(status: PlaybackStatus) {
@@ -195,16 +195,16 @@ class MainActivity : AppCompatActivity(), ServiceCallbacks {
 
     private fun createCards(): ArrayList<CardModel> {
         val cardModels = ArrayList<CardModel>()
-        cardModels.add(CardModel(R.drawable.fight,getString(R.string.type_battle), MusicType.Battle))
-        cardModels.add(CardModel(R.drawable.sorrow, getString(R.string.type_sorrow), MusicType.SORROW))
-        cardModels.add(CardModel(R.drawable.peaceful, getString(R.string.type_calm), MusicType.CALM))
-        cardModels.add(CardModel(R.drawable.thunderstorm, getString(R.string.type_fear), MusicType.FEAR))
+        cardModels.add(CardModel(R.drawable.war,getString(R.string.type_battle), MusicType.Battle))
+        cardModels.add(CardModel(R.drawable.defeated, getString(R.string.type_sorrow), MusicType.SORROW))
+        cardModels.add(CardModel(R.drawable.calm, getString(R.string.type_calm), MusicType.CALM))
+        cardModels.add(CardModel(R.drawable.monster, getString(R.string.type_fear), MusicType.FEAR))
         return cardModels
     }
 
     private fun createNotificationChannel() {
         val notificationChannel = NotificationChannel(
-            MusicPlayerService.CHANNEL_ID,
+            MediaNotification.CHANNEL_ID,
             "Media Player",
             NotificationManager.IMPORTANCE_LOW
         )
@@ -239,18 +239,15 @@ class MainActivity : AppCompatActivity(), ServiceCallbacks {
         super.onDestroy()
     }
 
-    private fun playMusic(type: MusicType?) {
+    private fun playMusic(type: MusicType) {
         // check service connection
-        if (!serviceBound) { // create and connect service for the first time
+        if (serviceBound) {
+            playerService?.changeMusicType(type)
+        } else { // create and connect service for the first time
             val intent = Intent(this@MainActivity, MusicPlayerService::class.java)
             intent.putExtra("type", type)
             startForegroundService(intent)
             bindService(intent, serviceConnection!!, 0)
-        } else {
-            //FIXME: find a replacement for broadcasting method
-            val intent = Intent(BROADCAST_PLAY_NEW_AUDIO)
-            intent.putExtra("type", type)
-            sendBroadcast(intent)
         }
     }
 

@@ -3,10 +3,8 @@ package com.example.readersmusic;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaDataSource;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-
 import java.io.IOException;
 
 public class Music {
@@ -44,7 +42,7 @@ public class Music {
         }
         try {
             metadataRetriever.release();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
     }
 
